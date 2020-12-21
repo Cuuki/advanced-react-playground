@@ -36,7 +36,7 @@ const Button: React.FC<{
   </button>
 );
 
-const Index: React.FC = () => {
+const ErrorBoundaryExample: React.FC = () => {
   const [data, setData] = useState<DataShape>({name: ''});
   const {get, response} = useFetch<DataShape>(
     'https://jsonplaceholder.typicode.com'
@@ -70,4 +70,4 @@ const Index: React.FC = () => {
   );
 };
 
-export default Index;
+export default ErrorBoundaryExample;
