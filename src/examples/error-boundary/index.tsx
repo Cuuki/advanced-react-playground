@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {useFetch} from 'use-http';
+import Button from '../../components/Button';
 
 interface DataShape {
   name: string;
@@ -8,32 +9,6 @@ interface DataShape {
 
 const ComponentDisplayingData: React.FC<{data: DataShape}> = ({data}) => (
   <p>Thank you {data.name.toUpperCase()} for reaching out!</p>
-);
-
-const Button: React.FC<{
-  handleClick: () => void;
-  color?: 'green' | 'yellow';
-}> = ({handleClick, color = 'green', children}) => (
-  <button
-    onClick={handleClick}
-    className={[
-      'mb-4',
-      'mr-2',
-      'py-2',
-      'px-4',
-      `bg-${color}-500`,
-      'text-white',
-      'font-semibold',
-      'rounded-lg',
-      'shadow-md',
-      `hover:bg-${color}-700`,
-      'focus:outline-none',
-      'focus:ring-2',
-      `focus:ring-${color}-400`,
-      'focus:ring-opacity-75',
-    ].join(' ')}>
-    {children}
-  </button>
 );
 
 const ErrorBoundaryExample: React.FC = () => {

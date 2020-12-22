@@ -1,18 +1,19 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
   NavLink,
+  Route,
+  Switch,
 } from 'react-router-dom';
 import ErrorBoundaryExample from './examples/error-boundary';
-import CompoundComponentsExample from "./examples/compound-components";
-import ControlPropsExample from "./examples/control-props";
-import HigherOrderComponentsExample from "./examples/higher-order-components";
-import ProviderPatternExample from "./examples/provider-pattern";
-import RenderPropsExample from "./examples/render-props";
-import StateInitializerExample from "./examples/state-initializer";
-import StateReducerExample from "./examples/state-reducer";
+import CompoundComponentsExample from './examples/compound-components';
+import ControlPropsExample from './examples/control-props';
+import HigherOrderComponentsExample from './examples/higher-order-components';
+import ProviderPatternExample from './examples/provider-pattern';
+import RenderPropsExample from './examples/render-props';
+import StateInitializerExample from './examples/state-initializer';
+import StateReducerExample from './examples/state-reducer';
+import PropGettersExample from './examples/prop-getters';
 
 const NavItem: React.FC<{path: string}> = ({path, children}) => (
   <NavLink
@@ -30,13 +31,18 @@ const App = () => (
       <nav className="flex mb-4 pb-4 border-b border-gray-300 whitespace-nowrap overflow-x-auto">
         <NavItem path="/">Home</NavItem>
         <NavItem path="/examples/error-boundary">Error Boundary</NavItem>
-        <NavItem path="/examples/compound-components">Compound Components</NavItem>
+        <NavItem path="/examples/compound-components">
+          Compound Components
+        </NavItem>
         <NavItem path="/examples/control-props">Controls Props</NavItem>
-        <NavItem path="/examples/higher-order-components">Higher Order Components</NavItem>
+        <NavItem path="/examples/higher-order-components">
+          Higher Order Components
+        </NavItem>
         <NavItem path="/examples/provider-pattern">Provider Pattern</NavItem>
         <NavItem path="/examples/render-props">Render Props</NavItem>
         <NavItem path="/examples/state-initializer">State Initializer</NavItem>
         <NavItem path="/examples/state-reducer">State Reducer</NavItem>
+        <NavItem path="/examples/prop-getters">Prop Getters</NavItem>
       </nav>
 
       <Switch>
@@ -63,6 +69,9 @@ const App = () => (
         </Route>
         <Route path="/examples/state-reducer">
           <StateReducerExample />
+        </Route>
+        <Route path="/examples/prop-getters">
+          <PropGettersExample />
         </Route>
         <Route path="/">Navigate between examples</Route>
       </Switch>
