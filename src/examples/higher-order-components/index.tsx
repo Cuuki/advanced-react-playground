@@ -1,44 +1,47 @@
 import React, {useState} from 'react';
 import Button from '../../components/Button';
 
-const getComponentDisplayName = (Component?: {
-  displayName?: string;
-  name?: string;
-}): string => Component?.displayName || Component?.name || 'Component';
+//TODO: forward ref implementation and typing
+const getComponentDisplayName = <TProps extends unknown>(
+  Component?: React.ComponentType<TProps>
+): string => Component?.displayName || Component?.name || 'Component';
 
-const hasProps = <T extends Record<string, any>>(
-  injectedProps: Record<string, any>
-) => (WrappedComponent: React.ComponentType<T>) => {
-  const HasProps: React.FC<T> = (props) => (
-    <WrappedComponent {...injectedProps} {...(props as T)} />
+const injectProps = <TProps extends React.PropsWithoutRef<any>>(
+  injectedProps: TProps
+) => (WrappedComponent: React.ComponentType<TProps>) => {
+  const InjectProps: React.FC<TProps> = (props) => (
+    <WrappedComponent {...injectedProps} {...(props as TProps)} />
   );
 
-  HasProps.displayName = `hasProps(${getComponentDisplayName(
+  InjectProps.displayName = `injectProps(${getComponentDisplayName(
     WrappedComponent
   )})`;
 
-  return HasProps;
+  return InjectProps;
 };
 
-const branch = <T extends Record<string, any>, S extends Record<string, any>>(
+const renderConditionally = <
+  TProps extends React.PropsWithoutRef<any>,
+  SProps extends React.PropsWithoutRef<any>
+>(
   test: boolean,
-  ComponentOnPass: React.ComponentType<T>,
-  ComponentOnFail: React.ComponentType<S>
+  ComponentOnPass: React.ComponentType<TProps>,
+  ComponentOnFail: React.ComponentType<SProps>
 ) => {
-  const Branch: React.FC<T | S> = (props) =>
+  const RenderConditionally: React.FC<TProps | SProps> = (props) =>
     test ? (
-      <ComponentOnPass {...(props as T)} />
+      <ComponentOnPass {...(props as TProps)} />
     ) : (
-      <ComponentOnFail {...(props as S)} />
+      <ComponentOnFail {...(props as SProps)} />
     );
 
-  Branch.displayName = `branch(${
+  RenderConditionally.displayName = `renderConditionally(${
     test
       ? getComponentDisplayName(ComponentOnPass)
       : getComponentDisplayName(ComponentOnFail)
   })`;
 
-  return Branch;
+  return RenderConditionally;
 };
 
 interface LoadingProps {
@@ -47,33 +50,45 @@ interface LoadingProps {
 
 const LoaderComponent: React.FC<LoadingProps> = ({message}) => <p>{message}</p>;
 
-interface HasLoaderProps {
+interface WithLoaderProps {
   isLoading: boolean;
   loadingMessage: string;
 }
 
-const hasLoader = <T extends HasLoaderProps = HasLoaderProps>(
-  WrappedComponent: React.ComponentType<T>
+const withLoader = <
+  TProps extends React.PropsWithoutRef<WithLoaderProps> = WithLoaderProps
+>(
+  WrappedComponent: React.ComponentType<TProps>
 ) => {
-  const HasLoader: React.FC<T> = (props) =>
-    branch(
-      props.isLoading,
-      hasProps<LoadingProps>({message: (props as T).loadingMessage})(
-        LoaderComponent
-      ),
+  const WithLoader: React.FC<TProps> = ({
+    isLoading,
+    loadingMessage,
+    ...props
+  }) =>
+    renderConditionally(
+      isLoading,
+      injectProps<LoadingProps>({message: loadingMessage})(LoaderComponent),
       WrappedComponent
-    )(props);
+    )(props as TProps);
 
-  HasLoader.displayName = `hasLoader(${getComponentDisplayName(
+  WithLoader.displayName = `withLoader(${getComponentDisplayName(
     WrappedComponent
   )})`;
 
-  return HasLoader;
+  return WithLoader;
 };
 
-const ExampleComponentWithLoader = hasLoader(() => (
-  <p>I am the actual component.</p>
-));
+interface ActualComponentProps {
+  text: string;
+}
+
+const ActualComponent: React.FC<ActualComponentProps> = ({text}) => (
+  <p>I am the actual component {text}.</p>
+);
+
+const ExampleComponentWithLoader = withLoader<
+  ActualComponentProps & WithLoaderProps
+>(ActualComponent);
 
 const HigherOrderComponentsExample: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -86,6 +101,7 @@ const HigherOrderComponentsExample: React.FC = () => {
       <ExampleComponentWithLoader
         isLoading={loading}
         loadingMessage="Some loading text..."
+        text="Mate"
       />
     </>
   );
